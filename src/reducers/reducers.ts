@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
-import { ElementsMap } from '../types';
+import { GameElement } from '../types';
 import elements from './elements-reducer';
 import selectedElements from './selected-elements-reducer';
 
 export interface AppState {
-  elements: ElementsMap;
+  elements: Array<GameElement>;
   selectedElements: Array<string>;
 }
 

@@ -1,45 +1,47 @@
 import { SET_ELEMENTS, SET_ELEMENT_POSITION, ADD_ELEMENTS, FLIP_ELEMENT, BRING_ELEMENT } from '../actions/types';
 import { ElementsActionType } from '../actions/elements-actions';
-import { ElementsMap } from '../types';
-import { keyBy, reverse, moveElementBackward } from '../utils';
+import { GameElement } from '../types';
+import { reverse, moveElementBackward } from '../utils';
 
-const initialState: ElementsMap = {};
+const initialState: Array<GameElement> = [];
 
 export default (state = initialState, action: ElementsActionType) => {
-  const _state = { ...state };
+  const _state = [ ...state ];
 
   switch (action.type) {
     case SET_ELEMENTS:
-      return keyBy(action.payload, 'id');
+      return action.payload;
     case ADD_ELEMENTS:
-      return { ...state, ...keyBy(action.payload, 'id') };
+      return [ ...state, ...action.payload ];
     case SET_ELEMENT_POSITION: {
       const { id, position: { x, y } } = action.payload;
+      const elIndex = state.findIndex((el) => el.id === id);
 
-      if (typeof _state[id] !== 'undefined') {
-        _state[id].x = x;
-        _state[id].y = y; 
+      if (elIndex !== -1) {
+        _state[elIndex].x = x;
+        _state[elIndex].y = y; 
       }
 
       return _state;
     }
     case FLIP_ELEMENT: {
       const { id } = action.payload;
+      const elIndex = state.findIndex((el) => el.id === id);
 
-      if (typeof _state[id] !== 'undefined') {
-        _state[id].faceDown = !_state[id].faceDown;
+      if (elIndex !== -1) {
+        _state[elIndex].faceDown = !_state[elIndex].faceDown;
       }
       
       return _state;
     }
     case BRING_ELEMENT: {
       const { id, direction } = action.payload;
+      const elIndex = state.findIndex((el) => el.id === id);
 
-      if (typeof _state[id] !== 'undefined') {
-        const stateValues = Object.values(_state);
-        const sameTypeElements = stateValues.filter((el) => el.type === _state[id].type);
-        const differentTypeElements = stateValues.filter((el) => el.type !== _state[id].type);
-        let shiftedState = [ ...stateValues ];
+      if (elIndex !== -1) {
+        const sameTypeElements = _state.filter((el) => el.type === _state[elIndex].type);
+        const differentTypeElements = _state.filter((el) => el.type !== _state[elIndex].type);
+        let shiftedState = [ ..._state ];
 
         switch (direction) {
           case 'forward':
@@ -59,8 +61,8 @@ export default (state = initialState, action: ElementsActionType) => {
             const differentIdElements = sameTypeElements.filter((el) => el.id !== id);
 
             const shiftedTypeElements = direction === 'front' 
-              ? [ ...differentIdElements, _state[id] ]
-              : [ _state[id], ...differentIdElements ];
+              ? [ ...differentIdElements, _state[elIndex] ]
+              : [ _state[elIndex], ...differentIdElements ];
 
             shiftedState = [
               ...differentTypeElements,
@@ -72,7 +74,7 @@ export default (state = initialState, action: ElementsActionType) => {
             break;
         }
         
-        return keyBy(shiftedState, 'id');
+        return shiftedState;
       }
 
       return _state;

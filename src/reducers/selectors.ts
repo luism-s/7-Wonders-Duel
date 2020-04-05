@@ -1,8 +1,8 @@
 import { AppState } from './reducers';
-import { ElementTypes, ElementsMap } from '../types';
+import { ElementTypes, GameElement } from '../types';
 
 export const getElements = (state: AppState, type?: ElementTypes) =>
-  type ? Object.values(state.elements).filter((el) => el.type === type) : Object.values(state.elements);
+  type ? state.elements.filter((el) => el.type === type) : state.elements;
 
 export const getElementOfType = (state: AppState, type: ElementTypes) => {
   const elements = getElements(state, type);
@@ -11,15 +11,13 @@ export const getElementOfType = (state: AppState, type: ElementTypes) => {
 };
 
 export const getElement = (state: AppState, id: string) =>
-  Object.values(state.elements).filter((el) => el.id === id);
+  state.elements.filter((el) => el.id === id);
 
 export const getSelectedElements = (state: AppState) => 
-  state.selectedElements.reduce((selectedElements: ElementsMap, id: string) => {
-    if (typeof state.elements[id] !== 'undefined') {
-      selectedElements[id] = state.elements[id];
-    }
+  state.selectedElements.reduce((selectedElements: Array<GameElement>, id: string) => {
+    const elIndex = state.elements.findIndex((el) => el.id === id);
 
-    return selectedElements;
-  }, {});
+    return elIndex !== -1 ? [ ...selectedElements, state.elements[elIndex]] : selectedElements;
+  }, []);
 
 export const getSelectedElementsIds = (state: AppState) => state.selectedElements;

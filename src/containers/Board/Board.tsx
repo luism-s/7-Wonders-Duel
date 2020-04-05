@@ -18,7 +18,7 @@ import './Board.scss';
 
 interface StateProps {
   elements: Array<GameElement>;
-  selectedElements: ElementsMap;
+  selectedElements: Array<GameElement>;
   coins: Array<GameElement>;
   buildingCards: Array<GameElement>;
   wonderCards: Array<GameElement>;
@@ -94,7 +94,7 @@ const Board = (props: Props) => {
     const isSelected = !!props.selectedElements[elementId];
     
     if (isSelected) {
-      Object.values(props.selectedElements).forEach((element) => {
+      props.selectedElements.forEach((element) => {
         const newPosition = {
           x: element.x + data.deltaX,
           y: element.y + data.deltaY
@@ -276,7 +276,6 @@ const mapDispatchToProps: DispatchProps = {
   onBringElement: (elementId: string, direction: string) => bringElement(elementId, direction),
   onSelectElement: (elementId: string, selected: boolean) => selectElement(elementId, selected),
   onUnselectElements: () => unselectElements()
-
 };
 
 export default connect(
